@@ -1,0 +1,22 @@
+{
+  "name": "db2_connect",
+  "version": "1.0.0",
+  "description": "Simple NodeJs application to connect to a db2 instance using the ibm_db node module.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CBMasri/db2_connect.git"
+  },
+  "author": "Carl Masri",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CBMasri/db2_connect/issues"
+  },
+  "homepage": "https://github.com/CBMasri/db2_connect#readme",
+  "dependencies": {
+    "ibm_db": "^2.0.0"
+  }
+}
