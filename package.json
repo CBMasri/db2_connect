@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/CBMasri/db2_connect#readme",
   "dependencies": {
-    "ibm_db": "^2.0.0"
+    "ibm_db": "^2.0.0",
+    "minimist": "^1.2.0"
   }
 }
