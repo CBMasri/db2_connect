@@ -19,5 +19,8 @@
   "dependencies": {
     "ibm_db": "^2.0.0",
     "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1"
   }
 }
