@@ -56,7 +56,7 @@ ibmdb.open(connectionString, function(err, conn)
 			Set up a stored procedure with parameters
        	*/
        	var schema = "DB2INST1";
-		var proc1 = "create or replace procedure " + schema + ".proc1 " +
+		var proc1 = "create or replace procedure " + schema + ".proc1" +
        				"(IN v1 INTEGER, OUT v2 INTEGER, INOUT v3 VARCHAR(20)) " +
        				"BEGIN set v2 = v1 + 1; set v3 = 'verygood'; END";
 		var query = "call " + schema + ".proc1(?, ?, ?)";
@@ -74,7 +74,7 @@ ibmdb.open(connectionString, function(err, conn)
        		  paramType: type of the parameter (INPUT, OUTPUT, INOUT, FILE)
        		  DataType: data type (aka column type) of the parameter on the server. Default is CHAR.
        		  Data: actual data value for the parameter
-       		  Length: (for CHAR datatype) specifies the 
+       		  Length: (for CHAR datatype) specifies the max length of the data
        	*/
        	var param1 = {ParamType:"INPUT", DataType:"INTEGER", Data:0};
 	    var param2 = {ParamType:"OUTPUT", DataType:"INTEGER", Data:0};
@@ -82,15 +82,36 @@ ibmdb.open(connectionString, function(err, conn)
 
 		/*
 			Now that the stored procedure has been created we can call it
-			  Each '?' in .proc1(?, ?, ?) will be replaced by the defined param
+			  Each '?' in the query will be replaced by the defined param
 			  Driver will throw an error if the number of params don't match
 		*/
-		var result = conn.querySync(query, [param1, param2, param3]);
+		var results = conn.querySync(query, [param1, param2, param3]);
 		
 		/*
 			Do something with the result
 		*/
-		console.log(result);
+		console.log("Results from SP1:");
+		console.log(results + "\n");
+
+		/*
+			Remove the stored procedure from the database
+		*/
+		conn.querySync("drop procedure " + schema + ".proc1(INT, INT, VARCHAR(20))");
+
+		/*
+			Create a second stored procedure
+			  Returns an array [v2, resultSet]
+		*/
+		conn.querySync("create or replace procedure " + schema + ".proc2(IN v1 VARCHAR(20), OUT v2 VARCHAR(20)) " +
+					   "dynamic result sets 1 language sql BEGIN declare cr1 cursor with return for select CHRHOSTNAME from TSYSTEM where CHRHOSTNAME = v1; open cr1; set v2 = 'SUCCESS'; END");
+		param1 = {ParamType:"INPUT", DataType:"CHAR", Data:"NotificationDefaults", Length:30};
+		param2 = {ParamType:"OUTPUT", DataType:"CHAR", Data:"placeholder", Length:30};
+		results = conn.querySync("call " + schema + ".proc2(?, ?)", [param1, param2]);
+		console.log("Results from SP2:\n" + results[0] + "\n");
+		for (var i = 0; i < results[1].length; i++) {
+			console.log(results[1][i].CHRHOSTNAME);
+		}
+		conn.querySync("drop procedure " + schema + ".proc2(VARCHAR(20), VARCHAR(20))");
 
 		/*
 			On successful connection issue the SQL query by calling the async query() function on the database
@@ -99,7 +120,7 @@ ibmdb.open(connectionString, function(err, conn)
 		*/
 		conn.query("SELECT * FROM TSYSTEM", function(err, records, moreResultSets) {
 
-            console.log("INTSYSTEMID \t CHRHOSTNAME \t\t\t CHRTYPE \t INTHTTPPORT \t CHRHTTPINTERFACE");
+            console.log("\nINTSYSTEMID \t CHRHOSTNAME \t\t\t CHRTYPE \t INTHTTPPORT \t CHRHTTPINTERFACE");
 			console.log("----------- \t ----------- \t\t\t ------- \t ----------- \t ----------------");
 
 			/*
@@ -121,7 +142,6 @@ ibmdb.open(connectionString, function(err, conn)
 				Close the connection to the database.
 				  param 1: The callback function to execute on completion of close function.
 			*/
-
 			conn.close(function(){
 				console.log("\nConnection Closed.\n");
 			});
