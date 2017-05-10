@@ -114,6 +114,14 @@ ibmdb.open(connectionString, function(err, conn)
 		conn.querySync("drop procedure " + schema + ".proc2(VARCHAR(20), VARCHAR(20))");
 
 		/*
+			Assuming a stored procedure has already been created,
+			we can just call it using the following:
+		*/
+		// var param1 = {ParamType:"INPUT", DataType:"TYPE", Data:"data"};
+		// var param2 = {ParamType:"OUTPUT", DataType:"TYPE", Data:"data"};
+		// var result = conn.query("CALL DATABASE.PROCEDURE_NAME(?, ?)", [param1, param2]);
+
+		/*
 			On successful connection issue the SQL query by calling the async query() function on the database
 			  param 1: The SQL query to be issued
 			  param 2: The callback function to execute when the database server responds
